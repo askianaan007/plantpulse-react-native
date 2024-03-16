@@ -6,6 +6,7 @@ import {
   Image,
   TouchableOpacity,
   Alert,
+  ImageBackground,
 } from "react-native";
 import axios from "axios";
 import NetInfo from "@react-native-community/netinfo";
@@ -33,10 +34,7 @@ const Login = ({ navigation }) => {
         return;
       }
       setLoading(false);
-      const { data } = await axios.post(
-        "http://192.168.198.153:5000/api/v1/auth/login",
-        { email, password }
-      );
+      const { data } = await axios.post("/auth/login", { email, password });
       setState({ user: data.user, token: data.token });
       await AsyncStorage.setItem("@auth", JSON.stringify(data));
       alert(data && data.message);
@@ -59,86 +57,100 @@ const Login = ({ navigation }) => {
   }, []);
 
   return (
-    <View style={styles.container}>
-      <TitleText title={"Login"} />
-      <View style={styles.inputBox}>
-        <InputBox
-          inputTitle={"Email"}
-          keyboardType="email-address"
-          autoComplete="email"
-          value={email}
-          setValue={setEmail}
-        />
-        <InputBox
-          inputTitle={"Password"}
-          secureTextEntry={true}
-          autoComplete="password"
-          value={password}
-          setValue={setPassword}
-        />
-      </View>
-      <SubmitButton
-        btnTitle="login"
-        loading={loading}
-        handleSubmit={handleSubmit}
-        buttonStyle={{ top: 200 }}
-      />
-      <Text
+    <ImageBackground
+      source={require("../../assets/login back2.jpg")}
+      style={styles.backgroundImage}
+    >
+      <View
         style={{
-          top: 50,
-          color: "#FFFFFF",
-          fontSize: 15,
-          left: 100,
+          backgroundColor: "rgba(0, 0, 0, 0.5)",
+          height: "100%",
+          width: "100%",
+          position: "absolute",
+          alignItems: "center",
         }}
-        onPress={() => navigation.navigate("ResetPass")}
       >
-        Forgot password
-      </Text>
-      <View style={styles.loginSet}>
-        <Text style={styles.subtext}>
-          Don't have an account?{" "}
-          <Text
-            style={{ color: "red" }}
-            onPress={() => navigation.navigate("Register")}
-          >
-            Signup
-          </Text>
-        </Text>
-        <View style={styles.signin}>
-          <View style={styles.line}></View>
-          <Text style={styles.subtext2}>Login in with</Text>
-          <View style={styles.line}></View>
+        <TitleText title={"Login"} />
+        <View style={styles.inputBox}>
+          <InputBox
+            inputTitle={"Email"}
+            keyboardType="email-address"
+            autoComplete="email"
+            value={email}
+            setValue={setEmail}
+          />
+          <InputBox
+            inputTitle={"Password"}
+            secureTextEntry={true}
+            autoComplete="password"
+            value={password}
+            setValue={setPassword}
+          />
         </View>
-        <View style={styles.social}>
-          <TouchableOpacity style={styles.box}>
-            <Image
-              source={require("../../assets/Images/google.png")}
-              style={styles.image}
-              resizeMode="stretch"
-            />
-            <Text> Google </Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.box}>
-            <Image
-              source={require("../../assets/Images/Facebook_Logo_2023.png")}
-              style={styles.image2}
-              resizeMode="stretch"
-            />
-            <Text> Facebook</Text>
-          </TouchableOpacity>
+        <SubmitButton
+          btnTitle="login"
+          loading={loading}
+          handleSubmit={handleSubmit}
+          buttonStyle={{ top: 200 }}
+        />
+        <Text
+          style={{
+            top: 50,
+            color: "#FFFFFF",
+            fontSize: 15,
+            left: 100,
+          }}
+          onPress={() => navigation.navigate("ResetPass")}
+        >
+          Forgot password
+        </Text>
+        <View style={styles.loginSet}>
+          <Text style={styles.subtext}>
+            Don't have an account?{" "}
+            <Text
+              style={{ color: "red" }}
+              onPress={() => navigation.navigate("Register")}
+            >
+              Signup
+            </Text>
+          </Text>
+          <View style={styles.signin}>
+            <View style={styles.line}></View>
+            <Text style={styles.subtext2}>Login in with</Text>
+            <View style={styles.line}></View>
+          </View>
+          <View style={styles.social}>
+            <TouchableOpacity style={styles.box}>
+              <Image
+                source={require("../../assets/Images/google.png")}
+                style={styles.image}
+                resizeMode="stretch"
+              />
+              <Text> Google </Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.box}>
+              <Image
+                source={require("../../assets/Images/Facebook_Logo_2023.png")}
+                style={styles.image2}
+                resizeMode="stretch"
+              />
+              <Text> Facebook</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
-    </View>
+    </ImageBackground>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    flexDirection: "column",
-    alignItems: "center",
-    backgroundColor: "#31A05F",
+  backgroundImage: {
     width: "100%",
+    alignItems: "center",
+    flexDirection: "column",
+    flex: 1,
+    resizeMode: "cover",
+    // or 'stretch' or 'contain'
   },
   inputBox: {
     top: "15%",

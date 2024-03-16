@@ -2,15 +2,22 @@ const express = require("express");
 const {
   registerController,
   loginController,
+  updateUserController,
+  requireSingIn,
 } = require("../controllers/userController");
 
-//router object
+//riouter object
 const router = express.Router();
 
 //routes
-//register || post
+// REGISTER || POST
 router.post("/register", registerController);
-//login || post
+
+// LOGIN || POST
 router.post("/login", loginController);
 
+//UPDATE || PUT
+router.put("/update-user", requireSingIn, updateUserController);
+
+//export
 module.exports = router;

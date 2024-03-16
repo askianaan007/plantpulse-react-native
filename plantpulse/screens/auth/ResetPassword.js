@@ -1,21 +1,41 @@
-import {React,useState} from "react";
-import { Text, View, StyleSheet } from "react-native";
+import { React, useState } from "react";
+import { Text, View, StyleSheet, ImageBackground } from "react-native";
 import TitleText from "../../components/titleText";
 import InputBox from "../../components/inputBox";
 import SubmitButton from "../../components/submitButton";
 
-
 const ResetPass = ({ navigation }) => {
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [loading, setLoading] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
   return (
-    <View style={styles.container}>
+    <ImageBackground
+      source={require("../../assets/login back2.jpg")}
+      style={styles.backgroundImage}
+    >
+      <View
+        style={{
+          backgroundColor: "rgba(0, 0, 0, 0.5)",
+          height: "100%",
+          width: "100%",
+          position: "absolute",
+          alignItems: "center",
+        }}
+      ></View>
       <TitleText title={"Reset Password"} />
 
       <View style={styles.inputBox}>
-        <Text style={{marginBottom:30,fontSize:18,fontWeight:"bold",color:"#fff"}}>Please enter your email address to request a password reset</Text>
+        <Text
+          style={{
+            marginBottom: 30,
+            fontSize: 18,
+            fontWeight: "bold",
+            color: "#fff",
+          }}
+        >
+          Please enter your email address to request a password reset
+        </Text>
         <InputBox
           inputTitle={"Email"}
           keyboardType="email-address"
@@ -33,12 +53,12 @@ const ResetPass = ({ navigation }) => {
         />
       </View>
       <SubmitButton btnTitle="Reset" buttonStyle={{ top: 230 }} />
-    </View>
+    </ImageBackground>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  backgroundImage: {
     flex: 1,
     flexDirection: "column",
     alignItems: "center",
@@ -46,7 +66,7 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   inputBox: {
-    top: "20%",
+    top: "15%",
     width: "80%",
   },
 });

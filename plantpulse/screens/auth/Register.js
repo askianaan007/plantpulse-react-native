@@ -1,4 +1,13 @@
-import { View, Text, StyleSheet, Alert, TextInput,TouchableOpacity,Image } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Alert,
+  TextInput,
+  TouchableOpacity,
+  Image,
+  ImageBackground,
+} from "react-native";
 import React from "react";
 import InputBox from "../../components/inputBox";
 import { useState } from "react";
@@ -20,11 +29,13 @@ const Register = ({ navigation }) => {
         return;
       }
       setLoading(false);
-      const { data } = await axios.post(
-        "http://192.168.198.153:5000/api/v1/auth/register",
-        { name, email, password }
-      );
+      const { data } = await axios.post("/auth/register", {
+        name,
+        email,
+        password,
+      });
       alert(data && data.message);
+      navigation.navigate("Login");
       console.log("register data==>", { name, email, password });
     } catch (error) {
       alert(error.response.data.message);
@@ -34,96 +45,109 @@ const Register = ({ navigation }) => {
   };
 
   return (
-    <View style={styles.container}>
-      <TitleText title={"Register"} />
-      <View style={styles.inputBox}>
-        <InputBox inputTitle={"Name"} value={name} setValue={setName} />
-
-        <InputBox
-          inputTitle={"Email"}
-          keyboardType="email-address"
-          autoComplete="email"
-          value={email}
-          setValue={setEmail}
-        />
-
-        <InputBox
-          inputTitle={"Password"}
-          secureTextEntry={true}
-          autoComplete="password"
-          value={password}
-          setValue={setPassword}
-        />
-
-        <Text
-          style={{ color: "red", fontSize: 16 }}
-          onPress={() => navigation.navigate("ResetPass")}
-        ></Text>
-      </View>
-      <SubmitButton
-        btnTitle="Register"
-        loading={loading}
-        handleSubmit={handleSubmit}
-        buttonStyle={{ top: 150 }}
-      />
-      <Text
+    <ImageBackground
+      source={require("../../assets/login back2.jpg")}
+      style={styles.backgroundImage}
+    >
+      <View
         style={{
-          top: 25,
-          color: "#FFFFFF",
-          fontSize: 15,
-          left: 100,
+          backgroundColor: "rgba(0, 0, 0, 0.5)",
+          height: "100%",
+          width: "100%",
+          position: "absolute",
+          alignItems: "center",
         }}
-        onPress={() => navigation.navigate("ResetPass")}
       >
-        Forgot password
-      </Text>
-      <View style={styles.loginSet}>
-        <Text style={styles.subtext}>
-          Already have an account?{" "}
+        <TitleText title={"Register"} />
+        <View style={styles.inputBox}>
+          <InputBox inputTitle={"Name"} value={name} setValue={setName} />
+
+          <InputBox
+            inputTitle={"Email"}
+            keyboardType="email-address"
+            autoComplete="email"
+            value={email}
+            setValue={setEmail}
+          />
+
+          <InputBox
+            inputTitle={"Password"}
+            secureTextEntry={true}
+            autoComplete="password"
+            value={password}
+            setValue={setPassword}
+          />
+
           <Text
-            style={{ color: "red" }}
-            onPress={() => navigation.navigate("Login")}
-          >
-            Login
-          </Text>
-        </Text>
-        <View style={styles.signin}>
-          <View style={styles.line}></View>
-          <Text style={styles.subtext2}>Login in with</Text>
-          <View style={styles.line}></View>
+            style={{ color: "red", fontSize: 16 }}
+            onPress={() => navigation.navigate("ResetPass")}
+          ></Text>
         </View>
+        <SubmitButton
+          btnTitle="Register"
+          loading={loading}
+          handleSubmit={handleSubmit}
+          buttonStyle={{ top: 150 }}
+        />
+        <Text
+          style={{
+            top: 25,
+            color: "#FFFFFF",
+            fontSize: 15,
+            left: 100,
+          }}
+          onPress={() => navigation.navigate("ResetPass")}
+        >
+          Forgot password
+        </Text>
+        <View style={styles.loginSet}>
+          <Text style={styles.subtext}>
+            Already have an account?{" "}
+            <Text
+              style={{ color: "red" }}
+              onPress={() => navigation.navigate("Login")}
+            >
+              Login
+            </Text>
+          </Text>
+          <View style={styles.signin}>
+            <View style={styles.line}></View>
+            <Text style={styles.subtext2}>Login in with</Text>
+            <View style={styles.line}></View>
+          </View>
 
-        <View style={styles.social}>
-          <TouchableOpacity style={styles.box}>
-            <Image
-              source={require("../../assets/Images/google.png")}
-              style={styles.image}
-              resizeMode="stretch"
-            />
-            <Text> Google </Text>
-          </TouchableOpacity>
+          <View style={styles.social}>
+            <TouchableOpacity style={styles.box}>
+              <Image
+                source={require("../../assets/Images/google.png")}
+                style={styles.image}
+                resizeMode="stretch"
+              />
+              <Text> Google </Text>
+            </TouchableOpacity>
 
-          <TouchableOpacity style={styles.box}>
-            <Image
-              source={require("../../assets/Images/Facebook_Logo_2023.png")}
-              style={styles.image2}
-              resizeMode="stretch"
-            />
-            <Text> Facebook</Text>
-          </TouchableOpacity>
+            <TouchableOpacity style={styles.box}>
+              <Image
+                source={require("../../assets/Images/Facebook_Logo_2023.png")}
+                style={styles.image2}
+                resizeMode="stretch"
+              />
+              <Text> Facebook</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
-    </View>
+    </ImageBackground>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    flexDirection: "column",
-    alignItems: "center",
-    backgroundColor: "#31A05F",
+  backgroundImage: {
     width: "100%",
+    alignItems: "center",
+    flexDirection: "column",
+    flex: 1,
+    resizeMode: "cover",
   },
 
   inputBox: {

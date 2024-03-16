@@ -11,7 +11,6 @@ const SubmitButton = ({ handleSubmit, btnTitle, loading, buttonStyle }) => {
         <Text style={styles.buttonText}>
           {loading ? "please wait..." : btnTitle}
         </Text>
-
       </TouchableOpacity>
     </View>
   );
@@ -21,15 +20,15 @@ const styles = StyleSheet.create({
   button: {
     borderRadius: 50,
     borderWidth: 2,
-    borderColor: "#FBFBFB",
-    backgroundColor: "#214530",
+    borderColor: "#34492a",
+    backgroundColor: "#eecf64",
     paddingVertical: 10,
     paddingHorizontal: 100,
     // alignItems: 'center',
     marginBottom: 20,
   },
   buttonText: {
-    color: "#FBFBFB",
+    color: "#34492a",
     fontSize: 25,
     fontWeight: "bold",
   },

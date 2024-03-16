@@ -1,142 +1,161 @@
+const JWT = require("jsonwebtoken");
+const { hashPassword, comparePassword } = require("../helpers/authHelper");
 const userModel = require("../models/userModel");
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
+var { expressjwt: jwt } = require("express-jwt");
 
-const registerController = async (req, res, next) => {
+//middleware
+const requireSingIn = jwt({
+  secret: process.env.JWT_SECRET,
+  algorithms: ["HS256"],
+});
+
+//register
+const registerController = async (req, res) => {
   try {
     const { name, email, password } = req.body;
     //validation
-    if (!name || !email || !password) {
-      return res.status(404).send({
+    if (!name) {
+      return res.status(400).send({
         success: false,
-        message: "please fill the all fields",
+        message: "name is required",
       });
     }
-
-    if (password.length < 6) {
-      return res.status(404).send({
+    if (!email) {
+      return res.status(400).send({
         success: false,
-        message: "password more than 6 character ",
+        message: "email is required",
       });
     }
-
-    //existing user
-    const existingUser = await userModel.findOne({ email });
-    if (existingUser) {
+    if (!password || password.length < 6) {
+      return res.status(400).send({
+        success: false,
+        message: "password is required and 6 character long",
+      });
+    }
+    //exisiting user
+    const exisitingUser = await userModel.findOne({ email });
+    if (exisitingUser) {
       return res.status(500).send({
-        success: true,
-        message: "User already exists",
+        success: false,
+        message: "User Already Register With This EMail",
       });
     }
-    //hash password
-    const hashedPassword = await bcrypt.hash(password, 10);
-    console.log("hashedPassword: ", hashedPassword);
+    //hashed pasword
+    const hashedPassword = await hashPassword(password);
+
     //save user
-    const newUser = await userModel.create({
+    const user = await userModel({
       name,
       email,
       password: hashedPassword,
-    });
+    }).save();
 
-    //success message
-    return res.status(201).json({
-      message: "registered succesfully",
-      newUser,
+    return res.status(201).send({
+      success: true,
+      message: "Registeration Successfull please login",
     });
   } catch (error) {
     console.log(error);
     return res.status(500).send({
       success: false,
-      message: "error in register API",
+      message: "Error in Register API",
       error,
     });
   }
 };
 
-const loginController = async (req, res, next) => {
+//login
+const loginController = async (req, res) => {
   try {
     const { email, password } = req.body;
     //validation
     if (!email || !password) {
       return res.status(500).send({
         success: false,
-        message: "please provide email and password",
+        message: "Please Provide Email Or Password",
       });
     }
-    //find user
+    // find user
     const user = await userModel.findOne({ email });
     if (!user) {
       return res.status(500).send({
         success: false,
-        message: "User not found",
+        message: "User Not Found",
       });
     }
-
     //match password
-
-    if (user && (await bcrypt.compare(password, user.password))) {
-      // jwt token
-      const token = await jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
-        expiresIn: "1d",
-      });
-
-      user.password = undefined;
-      res.status(200).send({
-        success: true,
-        message: "login successfully",
-        token,
-        user,
-      });
-    } else {
+    const match = await comparePassword(password, user.password);
+    if (!match) {
       return res.status(500).send({
         success: false,
-        message: "invalid user name or password", 
+        message: "Invalid usrname or password",
       });
     }
+    //TOKEN JWT
+    const token = await JWT.sign({ _id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "7d",
+    });
+
+    // undeinfed password
+    user.password = undefined;
+    res.status(200).send({
+      success: true,
+      message: "login successfully",
+      token,
+      user,
+    });
   } catch (error) {
     console.log(error);
     return res.status(500).send({
       success: false,
-      message: "error in login API",
+      message: "error in login api",
       error,
     });
   }
 };
 
-const resetPasswordController = async (req, res, next) => {
+//update user
+const updateUserController = async (req, res) => {
   try {
-    const { email, newPassword } = req.body;
-
-    // Validation
-    if (!email || !newPassword) {
-      return res.status(400).json({ success: false, message: "Please provide email and new password" });
-    }
-
-    // Check if the user exists
+    const { name, password, email } = req.body;
+    //user find
     const user = await userModel.findOne({ email });
-    if (!user) {
-      return res.status(404).json({ success: false, message: "User not found" });
+    //password validate
+    if (password && password.length < 6) {
+      return res.status(400).send({
+        success: false,
+        message: "Password is required and should be 6 character long",
+      });
     }
-
-    // Hash the new password
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
-
-    // Update the user's password
-    user.password = hashedPassword;
-    await user.save();
-
-    return res.status(200).json({ success: true, message: "Password reset successfully" });
+    const hashedPassword = password ? await hashPassword(password) : undefined;
+    //updated useer
+    const updatedUser = await userModel.findOneAndUpdate(
+      { email },
+      {
+        name: name || user.name,
+        password: hashedPassword || user.password,
+      },
+      { new: true }
+    );
+    updatedUser.password = undefined;
+    res.status(200).send({
+      success: true,
+      message: "Profile Updated Please Login",
+      updatedUser,
+    });
   } catch (error) {
     console.log(error);
-    return res.status(500).json({ success: false, message: "Error in resetting password", error });
+    res.status(500).send({
+      success: false,
+      message: "Error In User Update Api",
+      error,
+    });
   }
 };
 
 module.exports = {
-  resetPasswordController,
-};
-module.exports = {
+  requireSingIn,
   registerController,
   loginController,
-  resetPasswordController,
+  updateUserController,
 };
